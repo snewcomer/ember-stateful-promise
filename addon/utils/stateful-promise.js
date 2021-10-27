@@ -13,17 +13,19 @@ export class StatefulPromise extends Promise {
   constructor(executor, destroyable) {
     super((resolve, reject) => {
       if (destroyable) {
-        registerDestructor(destroyable, () =>
+        registerDestructor(destroyable, () => {
+          this._state = 'ERROR';
           reject(
             new Error('The object this promise was attached to was destroyed')
-          )
-        );
+          );
+        });
       }
 
       executor(
         // resolve fn
         (data) => {
           if (destroyable && isDestroying(destroyable)) {
+            this._state = 'ERROR';
             reject(
               new Error('The object this promise was attached to was destroyed')
             );

@@ -19,6 +19,7 @@ module('Unit | Utility | stateful-promise', function () {
   });
 
   test('it errors', async function (assert) {
+    assert.expect(6);
     const maybePromise = Promise.reject(2);
     let result = new StatefulPromise((resolve, reject) => {
       maybePromise.then((result) => resolve(result)).catch((e) => reject(e));
@@ -30,13 +31,14 @@ module('Unit | Utility | stateful-promise', function () {
     try {
       await result;
     } catch (e) {
-      assert.expect(result.isRunning, false);
-      assert.expect(result.isResolved, false);
-      assert.expect(result.isError, true);
+      assert.false(result.isRunning, false);
+      assert.false(result.isResolved, false);
+      assert.true(result.isError, true);
     }
   });
 
   test('will reject if destroyed', async function (assert) {
+    assert.expect(7);
     const maybePromise = Promise.resolve(2);
     const obj = {};
     let result = new StatefulPromise((resolve, reject) => {
@@ -55,9 +57,9 @@ module('Unit | Utility | stateful-promise', function () {
         e.message,
         'The object this promise was attached to was destroyed'
       );
-      assert.expect(result.isRunning, false);
-      assert.expect(result.isResolved, false);
-      assert.expect(result.isError, true);
+      assert.false(result.isRunning, false);
+      assert.false(result.isResolved, false);
+      assert.true(result.isError, true);
     }
   });
 });
