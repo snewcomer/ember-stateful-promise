@@ -6,4 +6,4 @@ export function timeout(t) {
       resolve();
     }, t);
   });
-} 
+}
