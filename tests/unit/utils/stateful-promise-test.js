@@ -5,9 +5,37 @@ import { destroy } from '@ember/destroyable';
 module('Unit | Utility | stateful-promise', function () {
   test('it works with promise', async function (assert) {
     const maybePromise = Promise.resolve(2);
-    let result = new StatefulPromise((resolve, reject) => {
-      maybePromise.then((result) => resolve(result)).catch((e) => reject(e));
+    let result = new StatefulPromise((resolveFn, rejectFn) => {
+      maybePromise.then((result) => resolveFn(result)).catch((e) => rejectFn(e));
     }, this);
+
+    assert.ok(result.isRunning);
+    assert.notOk(result.isResolved);
+    assert.notOk(result.isError);
+    await result;
+    assert.notOk(result.isRunning);
+    assert.ok(result.isResolved);
+    assert.notOk(result.isError);
+  });
+
+  test('it works with resolved promise as executor', async function (assert) {
+    const resolvedPromise = Promise.resolve(2);
+    let result = new StatefulPromise(resolvedPromise, this);
+
+    assert.notOk(result.isRunning);
+    assert.ok(result.isResolved);
+    assert.notOk(result.isError);
+    await result;
+    assert.notOk(result.isRunning);
+    assert.ok(result.isResolved);
+    assert.notOk(result.isError);
+  });
+
+  test('it works with promise as executor', async function (assert) {
+    const promise = new Promise((resolve) => {
+      resolve(2);
+    });
+    let result = new StatefulPromise(promise, this);
 
     assert.ok(result.isRunning);
     assert.notOk(result.isResolved);

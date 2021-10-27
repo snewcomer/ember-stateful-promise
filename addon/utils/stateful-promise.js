@@ -11,7 +11,10 @@ export class StatefulPromise extends Promise {
   destroyable = null;
 
   constructor(executor, destroyable) {
+    let state;
+
     super((resolve, reject) => {
+      // this === inside promise
       if (destroyable) {
         registerDestructor(destroyable, () => {
           this._state = 'ERROR';
@@ -21,26 +24,49 @@ export class StatefulPromise extends Promise {
         });
       }
 
-      executor(
-        // resolve fn
-        (data) => {
-          if (destroyable && isDestroying(destroyable)) {
-            this._state = 'ERROR';
-            reject(
-              new Error('The object this promise was attached to was destroyed')
-            );
-          } else {
-            resolve(data);
-            this._state = 'RESOLVED';
-          }
-        },
-        // reject fn
-        (err) => {
-          reject(err);
-          this._state = 'ERROR';
+      if (typeof executor !== 'function') {
+        // executor is not async
+        if (executor.then) {
+          executor
+            .then((result) => {
+              state = 'RESOLVED';
+              resolve(result);
+            })
+            .catch((e) => {
+              state = 'ERROR';
+              reject(e);
+            });
         }
-      );
+      } else {
+        executor(
+          // resolve fn
+          (data) => {
+            if (destroyable && isDestroying(destroyable)) {
+              this._state = 'ERROR';
+              reject(
+                new Error(
+                  'The object this promise was attached to was destroyed'
+                )
+              );
+            } else {
+              // this === instance
+              resolve(data);
+              this._state = 'RESOLVED';
+            }
+          },
+          // reject fn
+          (err) => {
+            reject(err);
+            this._state = 'ERROR';
+          }
+        );
+      }
     });
+
+    // do afterwards b/c we have proper "this"
+    if (state) {
+      this._state = state;
+    }
   }
 
   get isRunning() {
