@@ -5,9 +5,7 @@ module('Unit | Utility | stateful-promise', function () {
   test('it works', async function (assert) {
     const maybePromise = Promise.resolve(2);
     let result = new StatefulPromise((resolve, reject) => {
-      maybePromise
-        .then((result) => resolve(result))
-        .catch((e) => reject(e));
+      maybePromise.then((result) => resolve(result)).catch((e) => reject(e));
     });
 
     assert.ok(result.isRunning);
@@ -22,9 +20,7 @@ module('Unit | Utility | stateful-promise', function () {
   test('it errors', async function (assert) {
     const maybePromise = Promise.reject(2);
     let result = new StatefulPromise((resolve, reject) => {
-      maybePromise
-        .then((result) => resolve(result))
-        .catch((e) => reject(e));
+      maybePromise.then((result) => resolve(result)).catch((e) => reject(e));
     });
 
     assert.ok(result.isRunning);
@@ -33,9 +29,9 @@ module('Unit | Utility | stateful-promise', function () {
     try {
       await result;
     } catch (e) {
-      assert.notOk(result.isRunning);
-      assert.notOk(result.isResolved);
-      assert.ok(result.isError);
+      assert.expect(result.isRunning, false);
+      assert.expect(result.isResolved, false);
+      assert.expect(result.isError, true);
     }
   });
 });

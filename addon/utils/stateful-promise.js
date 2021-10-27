@@ -8,16 +8,18 @@ export class StatefulPromise extends Promise {
   @tracked _state = 'RUNNING';
 
   constructor(executor) {
-    super((resolve, reject) => executor(
-      (data) => {
-        resolve(data);
-        this._state = 'RESOLVED';
-      },
-      (err) => {
-        reject(err);
-        this._state = 'ERROR';
-      },
-    ));
+    super((resolve, reject) =>
+      executor(
+        (data) => {
+          resolve(data);
+          this._state = 'RESOLVED';
+        },
+        (err) => {
+          reject(err);
+          this._state = 'ERROR';
+        }
+      )
+    );
   }
 
   get isRunning() {
