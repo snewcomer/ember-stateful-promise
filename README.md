@@ -26,6 +26,20 @@ result.isResolved; // true
 result.isError; // false
 ```
 
+```
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
+import { statefulAction } from 'ember-stateful-promise/decorators/stateful-action';
+
+class MyComponent extends Component {
+    @action
+    @statefulAction
+    async clickMe() {
+        await fetch(url);
+    }
+}
+```
+
 
 Compatibility
 ------------------------------------------------------------------------------
