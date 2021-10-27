@@ -51,7 +51,10 @@ module('Unit | Utility | stateful-promise', function () {
     try {
       await result;
     } catch (e) {
-      assert.equal(e.message, "The object this promise was attached to was destroyed");
+      assert.equal(
+        e.message,
+        'The object this promise was attached to was destroyed'
+      );
       assert.expect(result.isRunning, false);
       assert.expect(result.isResolved, false);
       assert.expect(result.isError, true);
