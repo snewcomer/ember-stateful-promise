@@ -1,9 +1,9 @@
 import { statefulAction } from 'ember-stateful-promise/decorators/stateful-action';
-import { module, skip } from 'qunit';
+import { module, test } from 'qunit';
 import { timeout } from 'ember-stateful-promise/utils/timeout';
 
 module('Unit | decorators | stateful-action', function () {
-  skip('it works', async function (assert) {
+  test('it works', async function (assert) {
     class Person {
       @statefulAction
       async clickMe() {
