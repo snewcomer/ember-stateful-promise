@@ -1,7 +1,7 @@
 import { StatefulPromise } from 'ember-stateful-promise/utils/stateful-promise';
 
 // TODO - integrate with @ember/destroyable to reject promise when "this" is destroyed
-export function statefulAction(_target, _property, descriptor) {
+export function statefulAction(target, _property, descriptor) {
   const actualFunc = descriptor.value;
 
   function statefulFunc(...args) {
@@ -10,7 +10,7 @@ export function statefulAction(_target, _property, descriptor) {
     const maybePromise = actualFunc.call(this, ...args);
     const sp = new StatefulPromise((resolve, reject) => {
       maybePromise.then((result) => resolve(result)).catch((e) => reject(e));
-    });
+    }, target);
 
     return sp;
   }

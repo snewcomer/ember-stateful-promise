@@ -7,7 +7,7 @@ module('Unit | decorators | stateful-action', function () {
     class Person {
       @statefulAction
       async clickMe() {
-        await timeout(200);
+        await timeout(200, this);
       }
     }
 

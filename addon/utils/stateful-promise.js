@@ -1,4 +1,5 @@
 import { tracked } from '@glimmer/tracking';
+import { registerDestructor, isDestroying } from '@ember/destroyable';
 
 export class StatefulPromise extends Promise {
   /**
@@ -7,19 +8,31 @@ export class StatefulPromise extends Promise {
   */
   @tracked _state = 'RUNNING';
 
-  constructor(executor) {
-    super((resolve, reject) =>
+  destroyable = null;
+
+  constructor(executor, destroyable) {
+    super((resolve, reject) => {
+      if (destroyable) {
+        registerDestructor(destroyable, () => reject(new Error('The object this promise was attached to was destroyed')));
+      }
+
       executor(
+        // resolve fn
         (data) => {
-          resolve(data);
-          this._state = 'RESOLVED';
+          if (destroyable && isDestroying(destroyable)) {
+            reject(new Error('The object this promise was attached to was destroyed'));
+          } else {
+            resolve(data);
+            this._state = 'RESOLVED';
+          }
         },
+        // reject fn
         (err) => {
           reject(err);
           this._state = 'ERROR';
         }
       )
-    );
+    });
   }
 
   get isRunning() {

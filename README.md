@@ -7,6 +7,8 @@ ember-stateful-promise
 - `isResolved`
 - `isError`
 
+### Usage
+
 ```
 import { StatefulPromise } from 'ember-stateful-promise/utils/stateful-promise';
 
@@ -26,6 +28,31 @@ result.isResolved; // true
 result.isError; // false
 ```
 
+With destroyable
+```
+import { StatefulPromise } from 'ember-stateful-promise/utils/stateful-promise';
+
+class MyComponent extends Component {
+    @action
+    clickMe() {
+        const promise = fetch(url);
+        let result = new StatefulPromise((resolve, reject) => {
+            promise.then((data) => resolve(data)).catch((e) => reject(e));
+        }, this);
+
+        // Component destroyed
+        // and then
+        try {
+            await result;
+        } catch (e) {
+            // WILL ERROR here!
+        }
+
+    }
+}
+```
+
+### Decorator
 ```
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
