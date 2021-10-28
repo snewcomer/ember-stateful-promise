@@ -63,6 +63,13 @@ export function statefulFunction(target, _property, descriptor) {
 
     handler.isRunning = true;
 
+    sp.catch((e) => {
+      // ensure no unhandledrejection if canceled
+      if (!(e instanceof CanceledPromise)) {
+        throw e;
+      }
+    });
+
     return sp;
   };
 
