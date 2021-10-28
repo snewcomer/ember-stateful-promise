@@ -1,11 +1,11 @@
 import { StatefulPromise } from 'ember-stateful-promise/utils/stateful-promise';
 import { CanceledPromise } from 'ember-stateful-promise/utils/canceled-promise';
 
-export function statefulAction(target, _property, descriptor) {
+export function statefulFunction(target, _property, descriptor) {
   const actualFunc = descriptor.value;
 
   let rej;
-  function statefulFunc(...args) {
+  function _statefulFunc(...args) {
     if (rej) {
       rej(
         new CanceledPromise(
@@ -13,7 +13,7 @@ export function statefulAction(target, _property, descriptor) {
         )
       );
     }
-    statefulFunc.performCount++;
+    _statefulFunc.performCount++;
 
     const maybePromise = actualFunc.call(this, ...args);
     const sp = new StatefulPromise().create(target, (resolveFn, rejectFn) => {
@@ -26,9 +26,9 @@ export function statefulAction(target, _property, descriptor) {
     return sp;
   }
 
-  statefulFunc.performCount = 0;
+  _statefulFunc.performCount = 0;
 
-  descriptor.value = statefulFunc;
+  descriptor.value = _statefulFunc;
 
   return descriptor;
 }

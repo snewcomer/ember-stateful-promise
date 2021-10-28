@@ -1,11 +1,11 @@
-import { statefulAction } from 'ember-stateful-promise/decorators/stateful-action';
+import { statefulFunction } from 'ember-stateful-promise/decorators/stateful-function';
 import { module, test } from 'qunit';
 import { timeout } from 'ember-stateful-promise/utils/timeout';
 
-module('Unit | decorators | stateful-action', function () {
+module('Unit | decorators | stateful-function', function () {
   test('it works', async function (assert) {
     class Person {
-      @statefulAction
+      @statefulFunction
       async clickMe() {
         await timeout(this, 200);
       }
@@ -23,7 +23,7 @@ module('Unit | decorators | stateful-action', function () {
   test('debounces by default', async function (assert) {
     assert.expect(10);
     class Person {
-      @statefulAction
+      @statefulFunction
       async clickMe() {
         await timeout(this, 200);
       }

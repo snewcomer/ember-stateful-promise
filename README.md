@@ -14,7 +14,7 @@ Also [ember-promise-helpers](https://github.com/fivetanley/ember-promise-helpers
 
 ## Usage
 
-There are a few ways to use this addon.  Likely, you only need the `statefulAction` decorator.  However, if you need the lower level util, we make that available as `StatefulPromise` as well.
+There are a few ways to use this addon.  Likely, you only need the `stateful-function` decorator.  However, if you need the lower level util, we make that available as `StatefulPromise` as well.
 
 ### Stateful Promise
 
@@ -85,11 +85,11 @@ class MyComponent extends Component {
 ```
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
-import { statefulAction } from 'ember-stateful-promise/decorators/stateful-action';
+import { statefulFunction } from 'ember-stateful-promise/decorators/stateful-function';
 
 class MyComponent extends Component {
     @action
-    @statefulAction
+    @statefulFunction
     async clickMe() {
         await fetch(url);
     }
