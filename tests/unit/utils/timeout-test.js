@@ -4,7 +4,7 @@ import { module, test } from 'qunit';
 module('Unit | Utility | timeout', function () {
   // TODO: Replace this with your real tests.
   test('it works', async function (assert) {
-    let result = timeout();
+    let result = timeout(this);
     assert.ok(result.isRunning);
     assert.notOk(result.isResolved);
     await result;

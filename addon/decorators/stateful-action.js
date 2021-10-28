@@ -8,9 +8,9 @@ export function statefulAction(target, _property, descriptor) {
     statefulFunc.performCount++;
 
     const maybePromise = actualFunc.call(this, ...args);
-    const sp = new StatefulPromise((resolve, reject) => {
+    const sp = new StatefulPromise().create(target, (resolve, reject) => {
       maybePromise.then((result) => resolve(result)).catch((e) => reject(e));
-    }, target);
+    });
 
     return sp;
   }
