@@ -10,7 +10,7 @@ Also [ember-promise-helpers](https://github.com/fivetanley/ember-promise-helpers
 - `isRunning`
 - `isResolved`
 - `isError`
-- `isCancelled`
+- `isCanceled`
 
 ## Usage
 
@@ -100,9 +100,12 @@ class MyComponent extends Component {
 <button
   disabled={{if this.clickMe.isRunning "true"}}
   {{on "click" this.clickMe}}>
-    Click
+    Click 
 </button>
+<p>(Clicked this many times - {{this.clickMe.performCount}})</p>
 ```
+
+Note - the default behaviour out of the box is to debounce the action.  When clicked, the first promise will be canceled and a new promise will be created.
 
 Compatibility
 ------------------------------------------------------------------------------
