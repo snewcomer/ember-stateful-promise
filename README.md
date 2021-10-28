@@ -14,6 +14,12 @@ Also [ember-promise-helpers](https://github.com/fivetanley/ember-promise-helpers
 
 ## API
 
+Supports
+
+1. Derived state
+2. Debouncing async functions
+3. Cleanup of async functions wired up with `@ember/destroyable`
+
 - `isRunning`
 - `isResolved`
 - `isError`
@@ -113,7 +119,9 @@ class MyComponent extends Component {
 <p>(Clicked this many times - {{this.clickMe.performCount}})</p>
 ```
 
-Note - the default behaviour out of the box is to `debounce` the action.  When clicked, the first promise will be canceled and a new promise will be created.
+Note - the default behaviour out of the box is to `debounce` the action.  When clicked, the first promise will be rejected and a new promise will be created.
+
+Note - If you decorate a function with the `@action` decorator, you will lost the derived state.  `@statefulFunction` will bind `this` for you.  As a result, `@statefulFunction` replaces `@action` while giving you all the features of this addon!
 
 Compatibility
 ------------------------------------------------------------------------------
