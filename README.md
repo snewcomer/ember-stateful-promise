@@ -1,6 +1,11 @@
 ember-stateful-promise
 ==============================================================================
 
+[![Download count all time](https://img.shields.io/npm/dt/ember-stateful-promise.svg)](https://badge.fury.io/js/ember-stateful-promise)
+[![GitHub Actions Build Status](https://img.shields.io/github/workflow/status/snewcomer/ember-stateful-promise/CI/main)](https://github.com/snewcomer/ember-stateful-promise/actions/workflows/ci.yml?query=branch%3Amain)
+[![npm version](https://badge.fury.io/js/ember-stateful-promise.svg)](https://badge.fury.io/js/ember-stateful-promise)
+[![Ember Observer Score](https://emberobserver.com/badges/ember-stateful-promise.svg)](https://emberobserver.com/addons/ember-stateful-promise)
+
 [ember-concurrency](http://ember-concurrency.com/docs/introduction/) is the go to solution in the Ember community for tracking async action state and many other tasks around async behaviour.  
 
 This library seeks to simplify and expose a few flags on a promise object for you to use.  Moreover, they are tracked! This library can be used if you only need derived state and/or need a lightweight version of ember-concurrency.
