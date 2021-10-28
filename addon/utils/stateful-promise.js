@@ -20,6 +20,7 @@ export class StatefulPromise extends Promise {
     let state;
     super((resolve, reject) => {
       // fn when .then or .catch is executed
+      // or if an executor is provided directly from the function invocation
       if (fn) {
         // preserve native Promise behaviour
         // Interface when .then or .catch is called
@@ -34,7 +35,7 @@ export class StatefulPromise extends Promise {
           }
         );
       } else {
-        // store resolve/reject fns for later use in setup
+        // store resolve/reject fns for later use in .create method
         resolveFn = resolve;
         rejectFn = reject;
       }
