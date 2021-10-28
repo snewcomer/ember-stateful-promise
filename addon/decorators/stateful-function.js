@@ -5,7 +5,7 @@ export function statefulFunction(target, _property, descriptor) {
   const actualFunc = descriptor.value;
 
   let rej;
-  function _statefulFunc(...args) {
+  const _statefulFunc = function(...args) {
     if (rej) {
       rej(
         new CanceledPromise(
@@ -13,14 +13,22 @@ export function statefulFunction(target, _property, descriptor) {
         )
       );
     }
+
     _statefulFunc.performCount++;
 
     const maybePromise = actualFunc.call(this, ...args);
     const sp = new StatefulPromise().create(target, (resolveFn, rejectFn) => {
+      // store away in case we need to cancel
       rej = rejectFn;
       maybePromise
         .then((result) => resolveFn(result))
         .catch((e) => rejectFn(e));
+    });
+
+    Object.defineProperty(_statefulFunc, 'isRunning', {
+      get() {
+        return sp.isRunning;
+      }
     });
 
     return sp;
