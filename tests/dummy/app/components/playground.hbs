@@ -1,0 +1,20 @@
+<h2>This button will be disabled while it is running</h2>
+<button
+  type="button"
+  data-test-playground-button
+  disabled={{if this.clickMe.isRunning "true"}}
+  {{on "click" this.clickMe}}
+>
+    Click Me
+</button>
+<p data-test-playground-perform-count>Perform Count: {{this.clickMe.performCount}}</p>
+
+<h2>This button will be hammered</h2>
+<button
+  type="button"
+  data-test-playground-hammer-button
+  {{on "click" this.hammerMe}}
+>
+    Hammer Me
+</button>
+<p data-test-playground-hammer-perform-count>Perform Count: {{this.hammerMe.performCount}}</p>

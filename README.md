@@ -64,6 +64,7 @@ result.isError; // false
 
 ```
 import { StatefulPromise } from 'ember-stateful-promise/utils/stateful-promise';
+import { action } from '@ember/object';
 
 class MyComponent extends Component {
     @action
@@ -93,7 +94,6 @@ import { action } from '@ember/object';
 import { statefulFunction } from 'ember-stateful-promise/decorators/stateful-function';
 
 class MyComponent extends Component {
-    @action
     @statefulFunction
     async clickMe() {
         await fetch(url);
