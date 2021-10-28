@@ -33,4 +33,25 @@ module('Integration | Component | playground', function (hooks) {
       .dom('[data-test-playground-perform-count]')
       .hasText('Perform Count: 1');
   });
+
+  test('hammer it', async function (assert) {
+    await render(hbs`<Playground />`);
+    assert
+      .dom('[data-test-playground-hammer-perform-count]')
+      .hasText('Perform Count: 0');
+
+    click('[data-test-playground-hammer-button]');
+    click('[data-test-playground-hammer-button]');
+    await click('[data-test-playground-hammer-button]');
+
+    assert
+      .dom('[data-test-playground-hammer-perform-count]')
+      .hasText('Perform Count: 3');
+
+    await waitFor('[data-test-playground-hammer-button]:not([disabled])');
+
+    assert
+      .dom('[data-test-playground-hammer-perform-count]')
+      .hasText('Perform Count: 3');
+  });
 });

@@ -8,3 +8,13 @@
     Click Me
 </button>
 <p data-test-playground-perform-count>Perform Count: {{this.clickMe.performCount}}</p>
+
+<h2>This button will be hammered</h2>
+<button
+  type="button"
+  data-test-playground-hammer-button
+  {{on "click" this.hammerMe}}
+>
+    Hammer Me
+</button>
+<p data-test-playground-hammer-perform-count>Perform Count: {{this.hammerMe.performCount}}</p>

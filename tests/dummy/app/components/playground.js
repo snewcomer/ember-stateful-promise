@@ -9,4 +9,11 @@ export default class PlaygroundComponent extends Component {
 
     return 'done';
   }
+
+  @statefulFunction
+  async hammerMe() {
+    await timeout(this, 1000);
+
+    return 'done';
+  }
 }
