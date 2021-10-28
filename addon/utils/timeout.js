@@ -1,7 +1,7 @@
 import { StatefulPromise } from './stateful-promise';
 
 export function timeout(destroyable, t) {
-  return new Promise((resolve) => {
+  return new StatefulPromise().create(destroyable, (resolve) => {
     setTimeout(() => {
       resolve();
     }, t);
