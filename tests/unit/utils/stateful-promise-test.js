@@ -42,12 +42,12 @@ module('Unit | Utility | stateful-promise', function () {
     assert.true(result.isRunning);
     assert.false(result.isResolved);
     assert.false(result.isError);
-    assert.false(result.isCancelled);
+    assert.false(result.isCanceled);
     await result;
     assert.false(result.isRunning);
     assert.true(result.isResolved);
     assert.false(result.isError);
-    assert.false(result.isCancelled);
+    assert.false(result.isCanceled);
   });
 
   test('it works with promise', async function (assert) {
@@ -105,7 +105,7 @@ module('Unit | Utility | stateful-promise', function () {
     assert.true(result.isRunning);
     assert.false(result.isResolved);
     assert.false(result.isError);
-    assert.false(result.isCancelled);
+    assert.false(result.isCanceled);
     try {
       await result;
     } catch (e) {
@@ -116,7 +116,7 @@ module('Unit | Utility | stateful-promise', function () {
       assert.false(result.isRunning);
       assert.false(result.isResolved);
       assert.false(result.isError);
-      assert.true(result.isCancelled);
+      assert.true(result.isCanceled);
     }
   });
 
@@ -130,7 +130,7 @@ module('Unit | Utility | stateful-promise', function () {
     assert.false(result.isRunning);
     assert.false(result.isResolved);
     assert.true(result.isError);
-    assert.false(result.isCancelled);
+    assert.false(result.isCanceled);
     try {
       await result;
     } catch (e) {
@@ -138,7 +138,7 @@ module('Unit | Utility | stateful-promise', function () {
       assert.false(result.isRunning);
       assert.false(result.isResolved);
       assert.true(result.isError);
-      assert.false(result.isCancelled);
+      assert.false(result.isCanceled);
     }
   });
 
@@ -153,7 +153,7 @@ module('Unit | Utility | stateful-promise', function () {
       assert.false(instance.isRunning);
       assert.true(instance.isResolved);
       assert.false(instance.isError);
-      assert.false(instance.isCancelled);
+      assert.false(instance.isCanceled);
 
       done();
     });
@@ -170,7 +170,7 @@ module('Unit | Utility | stateful-promise', function () {
       assert.false(instance.isRunning);
       assert.false(instance.isResolved);
       assert.true(instance.isError);
-      assert.false(instance.isCancelled);
+      assert.false(instance.isCanceled);
 
       done();
     });

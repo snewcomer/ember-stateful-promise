@@ -1,9 +1,10 @@
 import { tracked } from '@glimmer/tracking';
 import { registerDestructor, isDestroying } from '@ember/destroyable';
+import { CanceledPromise } from 'ember-stateful-promise/utils/canceled-promise';
 
 export class StatefulPromise extends Promise {
   /**
-  @type {'RUNNING' | 'RESOLVED' | 'ERROR' | 'CANCELLED'}
+  @type {'RUNNING' | 'RESOLVED' | 'ERROR' | 'CANCELED'}
   @private
   */
   @tracked _state = 'RUNNING';
@@ -57,9 +58,11 @@ export class StatefulPromise extends Promise {
     }
 
     registerDestructor(destroyable, () => {
-      this._state = 'CANCELLED';
+      this._state = 'CANCELED';
       this._reject(
-        new Error('The object this promise was attached to was destroyed')
+        new CanceledPromise(
+          'The object this promise was attached to was destroyed'
+        )
       );
     });
 
@@ -75,9 +78,11 @@ export class StatefulPromise extends Promise {
       executor
         .then((result) => {
           if (isDestroying(destroyable)) {
-            this._state = 'CANCELLED';
+            this._state = 'CANCELED';
             this._reject(
-              new Error('The object this promise was attached to was destroyed')
+              new CanceledPromise(
+                'The object this promise was attached to was destroyed'
+              )
             );
           } else {
             this._state = 'RESOLVED';
@@ -93,9 +98,11 @@ export class StatefulPromise extends Promise {
         // resolve fn
         (data) => {
           if (isDestroying(destroyable)) {
-            this._state = 'ERROR';
+            this._state = 'CANCELED';
             this._reject(
-              new Error('The object this promise was attached to was destroyed')
+              new CanceledPromise(
+                'The object this promise was attached to was destroyed'
+              )
             );
           } else {
             this._state = 'RESOLVED';
@@ -125,7 +132,7 @@ export class StatefulPromise extends Promise {
     return this._state === 'ERROR';
   }
 
-  get isCancelled() {
-    return this._state === 'CANCELLED';
+  get isCanceled() {
+    return this._state === 'CANCELED';
   }
 }
