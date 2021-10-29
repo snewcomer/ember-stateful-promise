@@ -32,7 +32,8 @@ There are a few ways to use this addon.  Likely, you only need the `stateful-fun
 
 
 ### Decorator
-```
+
+```js
 import Component from '@glimmer/component';
 import { action } from '@ember/object';
 import { statefulFunction } from 'ember-stateful-promise/decorators/stateful-function';
@@ -45,7 +46,7 @@ class MyComponent extends Component {
 }
 ```
 
-```
+```hbs
 <button
   disabled={{if this.clickMe.isRunning "true"}}
   {{on "click" this.clickMe}}>
@@ -62,7 +63,7 @@ Note - If you decorate a function with the `@action` decorator, you will lost th
 ### Stateful Promise
 
 - Promise `interface`
-```
+```js
 import { StatefulPromise } from 'ember-stateful-promise/utils/stateful-promise';
 
 const promise = fetch(url);
@@ -83,7 +84,7 @@ result.isError; // false
 
 - `create` method with destroyable
 
-```
+```js
 import { StatefulPromise } from 'ember-stateful-promise/utils/stateful-promise';
 
 const promise = fetch(url);
@@ -100,7 +101,7 @@ result.isResolved; // true
 result.isError; // false
 ```
 
-```
+```js
 import { StatefulPromise } from 'ember-stateful-promise/utils/stateful-promise';
 import { action } from '@ember/object';
 
