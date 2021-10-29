@@ -8,9 +8,11 @@ ember-stateful-promise
 
 [ember-concurrency](http://ember-concurrency.com/docs/introduction/) is the go to solution in the Ember community for tracking async action state and many other tasks around async behaviour.  
 
-`ember-stateful-promise` seeks to simplify with native `async/await` instead of generators and expose a few flags on a promise object for you to use.  Moreover, they are tracked! This library can be used if you simply need derived state your async functions and/or need a lightweight version of ember-concurrency.
+`ember-stateful-promise` seeks to *simplify* with native `async/await` instead of generators and expose a few flags on a promise object for you to use.  Moreover, they are tracked! This library can be used if you simply need derived state your async functions and/or need a lightweight version of ember-concurrency.
 
 Also [ember-promise-helpers](https://github.com/fivetanley/ember-promise-helpers) is another great library if you want to calculate state from your promises.  `ember-stateful-promise` is different in that is seeks to provide derived state.
+
+Lastly, if you already use ember-concurrency but rather author with `async/await`, [ember-concurrency-async](https://github.com/chancancode/ember-concurrency-async) is available as a babel build time plugin.  Again, you just need to weigh the tradeoffs (size, complexity) for your project.
 
 ## API
 
