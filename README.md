@@ -30,6 +30,36 @@ Supports
 
 There are a few ways to use this addon.  Likely, you only need the `stateful-function` decorator.  However, if you need the lower level util, we make that available as `StatefulPromise` as well.
 
+
+### Decorator
+
+```js
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
+import { statefulFunction } from 'ember-stateful-promise/decorators/stateful-function';
+
+class MyComponent extends Component {
+    @statefulFunction
+    async clickMe() {
+        await fetch(url);
+    }
+}
+```
+
+```hbs
+<button
+  disabled={{if this.clickMe.isRunning "true"}}
+  {{on "click" this.clickMe}}>
+    Click 
+</button>
+<p>(Clicked this many times - {{this.clickMe.performCount}})</p>
+```
+
+Note - the default behaviour out of the box is to `debounce` the action.  When clicked, the first promise will be rejected and a new promise will be created.
+
+Note - If you decorate a function with the `@action` decorator, you will lost the derived state.  `@statefulFunction` will bind `this` for you.  As a result, `@statefulFunction` replaces `@action` while giving you all the features of this addon!
+
+
 ### Stateful Promise
 
 - Promise `interface`
@@ -95,33 +125,6 @@ class MyComponent extends Component {
     }
 }
 ```
-
-### Decorator
-```js
-import Component from '@glimmer/component';
-import { action } from '@ember/object';
-import { statefulFunction } from 'ember-stateful-promise/decorators/stateful-function';
-
-class MyComponent extends Component {
-    @statefulFunction
-    async clickMe() {
-        await fetch(url);
-    }
-}
-```
-
-```hbs
-<button
-  disabled={{if this.clickMe.isRunning "true"}}
-  {{on "click" this.clickMe}}>
-    Click 
-</button>
-<p>(Clicked this many times - {{this.clickMe.performCount}})</p>
-```
-
-Note - the default behaviour out of the box is to `debounce` the action.  When clicked, the first promise will be rejected and a new promise will be created.
-
-Note - If you decorate a function with the `@action` decorator, you will lost the derived state.  `@statefulFunction` will bind `this` for you.  As a result, `@statefulFunction` replaces `@action` while giving you all the features of this addon!
 
 Compatibility
 ------------------------------------------------------------------------------
