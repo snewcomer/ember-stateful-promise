@@ -8,7 +8,7 @@ ember-stateful-promise
 
 [ember-concurrency](http://ember-concurrency.com/docs/introduction/) is the go to solution in the Ember community for tracking async action state and many other tasks around async behaviour.  
 
-`ember-stateful-promise` seeks to simplify and expose a few flags on a promise object for you to use.  Moreover, they are tracked! This library can be used if you only need derived state and/or need a lightweight version of ember-concurrency.
+`ember-stateful-promise` seeks to simplify with native `async/await` instead of generators and expose a few flags on a promise object for you to use.  Moreover, they are tracked! This library can be used if you simply need derived state your async functions and/or need a lightweight version of ember-concurrency.
 
 Also [ember-promise-helpers](https://github.com/fivetanley/ember-promise-helpers) is another great library if you want to calculate state from your promises.  `ember-stateful-promise` is different in that is seeks to provide derived state.
 
@@ -29,6 +29,35 @@ Supports
 ## Usage
 
 There are a few ways to use this addon.  Likely, you only need the `stateful-function` decorator.  However, if you need the lower level util, we make that available as `StatefulPromise` as well.
+
+
+### Decorator
+```
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
+import { statefulFunction } from 'ember-stateful-promise/decorators/stateful-function';
+
+class MyComponent extends Component {
+    @statefulFunction
+    async clickMe() {
+        await fetch(url);
+    }
+}
+```
+
+```
+<button
+  disabled={{if this.clickMe.isRunning "true"}}
+  {{on "click" this.clickMe}}>
+    Click 
+</button>
+<p>(Clicked this many times - {{this.clickMe.performCount}})</p>
+```
+
+Note - the default behaviour out of the box is to `debounce` the action.  When clicked, the first promise will be rejected and a new promise will be created.
+
+Note - If you decorate a function with the `@action` decorator, you will lost the derived state.  `@statefulFunction` will bind `this` for you.  As a result, `@statefulFunction` replaces `@action` while giving you all the features of this addon!
+
 
 ### Stateful Promise
 
@@ -95,33 +124,6 @@ class MyComponent extends Component {
     }
 }
 ```
-
-### Decorator
-```
-import Component from '@glimmer/component';
-import { action } from '@ember/object';
-import { statefulFunction } from 'ember-stateful-promise/decorators/stateful-function';
-
-class MyComponent extends Component {
-    @statefulFunction
-    async clickMe() {
-        await fetch(url);
-    }
-}
-```
-
-```
-<button
-  disabled={{if this.clickMe.isRunning "true"}}
-  {{on "click" this.clickMe}}>
-    Click 
-</button>
-<p>(Clicked this many times - {{this.clickMe.performCount}})</p>
-```
-
-Note - the default behaviour out of the box is to `debounce` the action.  When clicked, the first promise will be rejected and a new promise will be created.
-
-Note - If you decorate a function with the `@action` decorator, you will lost the derived state.  `@statefulFunction` will bind `this` for you.  As a result, `@statefulFunction` replaces `@action` while giving you all the features of this addon!
 
 Compatibility
 ------------------------------------------------------------------------------
