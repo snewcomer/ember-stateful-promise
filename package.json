@@ -1,13 +1,15 @@
 {
   "name": "ember-stateful-promise",
   "version": "0.1.0",
-  "description": "The default blueprint for ember-cli addons.",
+  "description": "Stateful wrapper for native Promises",
   "keywords": [
-    "ember-addon"
+    "ember-addon",
+    "promises",
+    "ember-concurrency"
   ],
-  "repository": "",
+  "repository": "https://github.com/snewcomer/ember-stateful-promise",
   "license": "MIT",
-  "author": "",
+  "author": "Scott Newcomer",
   "directories": {
     "doc": "doc",
     "test": "tests"
