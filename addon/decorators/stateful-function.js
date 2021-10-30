@@ -26,7 +26,7 @@ class Handler {
 
 export function statefulFunction(options) {
   const throttle = options.throttle;
-  const decorator = function(target, _property, descriptor) {
+  const decorator = function (target, _property, descriptor) {
     const actualFunc = descriptor.value;
     const fn = actualFunc.bind(target);
 
@@ -83,10 +83,10 @@ export function statefulFunction(options) {
     descriptor.value = new Proxy(_statefulFunc, handler);
 
     return descriptor;
-  }
+  };
 
   if (isDecorating(...arguments)) {
-    return decorator(...arguments)
+    return decorator(...arguments);
   } else {
     return decorator;
   }
@@ -100,11 +100,11 @@ export function statefulFunction(options) {
  *
  * @returns {Boolean}
  */
- function isDecorating() {
+function isDecorating() {
   return (
-      arguments.length === 3 &&
-      (typeof arguments[0] === 'object' || typeof arguments[0] === 'function') &&
-      typeof arguments[1] === 'string' &&
-      typeof arguments[2] === 'object'
+    arguments.length === 3 &&
+    (typeof arguments[0] === 'object' || typeof arguments[0] === 'function') &&
+    typeof arguments[1] === 'string' &&
+    typeof arguments[2] === 'object'
   );
 }

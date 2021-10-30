@@ -56,9 +56,10 @@ module('Unit | decorators | stateful-function', function () {
 
     await promise2;
     assert.false(promise2.isRunning);
-  });  
+  });
 
   test('can throttle', async function (assert) {
+    assert.expect(8);
     class Person {
       @statefulFunction({ throttle: true })
       async clickMe() {
