@@ -57,7 +57,22 @@ class MyComponent extends Component {
 <p>(Clicked this many times - {{this.clickMe.performCount}})</p>
 ```
 
-Note - the default behaviour out of the box is to `debounce` the action.  When clicked, the first promise will be rejected and a new promise will be created.
+Note - the default behaviour out of the box is to `debounce` the action.  When clicked while a promise is outstanding, the first promise will be rejected and a new promise will be created.
+
+To throttle the function, pass `{ throttle: true }` to the decorator arguments.
+
+```js
+import Component from '@glimmer/component';
+import { action } from '@ember/object';
+import { statefulFunction } from 'ember-stateful-promise/decorators/stateful-function';
+
+class MyComponent extends Component {
+    @statefulFunction({ throttle: true })
+    async clickMe() {
+        await fetch(url);
+    }
+}
+```
 
 Note - If you decorate a function with the `@action` decorator, you will lost the derived state.  `@statefulFunction` will bind `this` for you.  As a result, `@statefulFunction` replaces `@action` while giving you all the features of this addon!
 

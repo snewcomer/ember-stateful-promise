@@ -56,5 +56,39 @@ module('Unit | decorators | stateful-function', function () {
 
     await promise2;
     assert.false(promise2.isRunning);
+  });  
+
+  test('can throttle', async function (assert) {
+    class Person {
+      @statefulFunction({ throttle: true })
+      async clickMe() {
+        await timeout(this, 200);
+      }
+    }
+
+    const person = new Person();
+    const promise = person.clickMe();
+    assert.true(promise.isRunning);
+    assert.false(promise.isError);
+    assert.equal(person.clickMe.performCount, 1);
+
+    const promise2 = person.clickMe();
+
+    assert.equal(person.clickMe.performCount, 1);
+    // first promise was canceled
+    assert.true(promise.isRunning);
+    assert.false(promise.isError);
+    assert.false(promise.isCanceled); // TODO think about overloading fn executor with a canceled callback
+
+    assert.notOk(promise2);
+
+    try {
+      await promise;
+    } catch (e) {
+      assert.false(
+        true,
+        'This promise was canceled. Another promise was created while the other was outstanding.'
+      );
+    }
   });
 });
