@@ -24,56 +24,87 @@ class Handler {
   }
 }
 
-export function statefulFunction(target, _property, descriptor) {
-  const actualFunc = descriptor.value;
-  const fn = actualFunc.bind(target);
+export function statefulFunction(options) {
+  const throttle = options.throttle;
+  const decorator = function (target, _property, descriptor) {
+    const actualFunc = descriptor.value;
+    const fn = actualFunc.bind(target);
 
-  const handler = new Handler();
-  let rej;
-  const _statefulFunc = function (...args) {
-    if (rej) {
-      rej(
-        new CanceledPromise(
-          'This promise was canceled. Another promise was created while the other was outstanding.'
-        )
-      );
-    }
-
-    handler.performCount++;
-
-    const maybePromise = fn.call(this, ...args);
-    // wrapping the promise in a StatefulPromise
-    const sp = new StatefulPromise().create(target, (resolveFn, rejectFn) => {
-      // store away in case we need to cancel
-      rej = rejectFn;
-      maybePromise
-        .then((result) => {
-          resolveFn(result);
-        })
-        .catch((e) => {
-          rejectFn(e);
-        })
-        .finally(() => {
-          handler.isRunning = sp.isRunning;
-          handler.isResolved = sp.isResolved;
-          handler.isError = sp.isError;
-          handler.isCanceled = sp.isCanceled;
-        });
-    });
-
-    handler.isRunning = true;
-
-    sp.catch((e) => {
-      // ensure no unhandledrejection if canceled
-      if (!(e instanceof CanceledPromise)) {
-        throw e;
+    const handler = new Handler();
+    let rej;
+    const _statefulFunc = function (...args) {
+      if (rej) {
+        if (throttle) {
+          return;
+        }
+        rej(
+          new CanceledPromise(
+            'This promise was canceled. Another promise was created while the other was outstanding.'
+          )
+        );
       }
-    });
 
-    return sp;
+      handler.performCount++;
+
+      const maybePromise = fn.call(this, ...args);
+      // wrapping the promise in a StatefulPromise
+      const sp = new StatefulPromise().create(target, (resolveFn, rejectFn) => {
+        // store away in case we need to cancel
+        rej = rejectFn;
+        maybePromise
+          .then((result) => {
+            resolveFn(result);
+          })
+          .catch((e) => {
+            rejectFn(e);
+          })
+          .finally(() => {
+            // Ideally we define a tracked property dynamically on the handler that just consumes the promise tracked state
+            // https://github.com/emberjs/ember.js/issues/18362
+            handler.isRunning = sp.isRunning;
+            handler.isResolved = sp.isResolved;
+            handler.isError = sp.isError;
+            handler.isCanceled = sp.isCanceled;
+          });
+      });
+
+      handler.isRunning = true;
+
+      sp.catch((e) => {
+        // ensure no unhandledrejection if canceled
+        if (!(e instanceof CanceledPromise)) {
+          throw e;
+        }
+      });
+
+      return sp;
+    };
+
+    descriptor.value = new Proxy(_statefulFunc, handler);
+
+    return descriptor;
   };
 
-  descriptor.value = new Proxy(_statefulFunc, handler);
+  if (isDecorating(...arguments)) {
+    return decorator(...arguments);
+  } else {
+    return decorator;
+  }
+}
 
-  return descriptor;
+/**
+ * If a decorator takes custom arguments, it should return another decorator
+ * function that does the actual decorating.  The way this is detected is by
+ * checking if the arguments match the expected decorator arguments which, for
+ * a method, is a target funcgion/class, a name, and a descriptor.
+ *
+ * @returns {Boolean}
+ */
+function isDecorating() {
+  return (
+    arguments.length === 3 &&
+    (typeof arguments[0] === 'object' || typeof arguments[0] === 'function') &&
+    typeof arguments[1] === 'string' &&
+    typeof arguments[2] === 'object'
+  );
 }
