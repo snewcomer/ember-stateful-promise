@@ -1,6 +1,6 @@
 {
   "name": "ember-stateful-promise",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Stateful wrapper for native Promises",
   "keywords": [
     "ember-addon",
