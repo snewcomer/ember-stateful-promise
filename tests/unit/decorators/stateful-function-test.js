@@ -40,8 +40,8 @@ module('Unit | decorators | stateful-function', function () {
     assert.equal(person.clickMe.performCount, 2);
     // first promise was canceled
     assert.false(promise.isRunning);
-    assert.true(promise.isError);
-    assert.false(promise.isCanceled); // TODO think about overloading fn executor with a canceled callback
+    assert.false(promise.isError);
+    assert.true(promise.isCanceled);
 
     assert.true(promise2.isRunning);
 
@@ -90,6 +90,36 @@ module('Unit | decorators | stateful-function', function () {
         true,
         'This promise was canceled. Another promise was created while the other was outstanding.'
       );
+    }
+  });
+
+  test('can cancel', async function (assert) {
+    assert.expect(8);
+
+    class Person {
+      @statefulFunction
+      async clickMe() {
+        await timeout(this, 200);
+      }
+    }
+
+    const person = new Person();
+    const promise = person.clickMe();
+    person.clickMe.cancel();
+    assert.true(promise.isRunning);
+    assert.false(promise.isCanceled);
+    assert.equal(person.clickMe.performCount, 1);
+    try {
+      await promise;
+    } catch (e) {
+      assert.equal(
+        e.message,
+        'This promise was canceled.  If this was unintended, check to see if `fn.cancel()` was called.'
+      );
+      assert.false(promise.isRunning);
+      assert.true(promise.isCanceled);
+      assert.false(promise.isError);
+      assert.equal(person.clickMe.performCount, 1);
     }
   });
 });

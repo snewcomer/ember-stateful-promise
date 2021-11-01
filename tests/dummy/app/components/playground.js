@@ -15,6 +15,14 @@ export default class PlaygroundComponent extends Component {
   }
 
   @statefulFunction
+  async cancelMe() {
+    this.clickMe();
+    this.clickMe.cancel();
+
+    return 'canceled';
+  }
+
+  @statefulFunction
   async hammerMe() {
     await timeout(this, 1000);
     await this.clickMe();

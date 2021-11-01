@@ -92,7 +92,11 @@ export class StatefulPromise extends Promise {
           }
         })
         .catch((e) => {
-          this._state = 'ERROR';
+          if (e instanceof CanceledPromise) {
+            this._state = 'CANCELED';
+          } else {
+            this._state = 'ERROR';
+          }
           this._reject(e);
         });
     } else {
@@ -113,7 +117,11 @@ export class StatefulPromise extends Promise {
         },
         // reject fn
         (err) => {
-          this._state = 'ERROR';
+          if (err instanceof CanceledPromise) {
+            this._state = 'CANCELED';
+          } else {
+            this._state = 'ERROR';
+          }
           this._reject(err);
         }
       );
