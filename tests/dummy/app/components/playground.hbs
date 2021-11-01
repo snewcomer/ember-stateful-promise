@@ -10,3 +10,14 @@
 <p data-test-playground-perform-count>Perform Count: {{this.clickMe.performCount}}</p>
 
 <NestedComponent @hammerMe={{this.hammerMe}} />
+
+<h2>Not a Promise</h2>
+<button
+  type="button"
+  data-test-playground-not-a-promise-button
+  disabled={{if this.notAPromise.isRunning "true"}}
+  {{on "click" this.notAPromise}}
+>
+    Not a Promise (click me)
+</button>
+<p data-test-playground-not-a-promise-perform-count>Perform Count: {{this.notAPromise.performCount}}</p>
