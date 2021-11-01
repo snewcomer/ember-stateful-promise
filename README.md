@@ -74,7 +74,7 @@ class MyComponent extends Component {
 }
 ```
 
-Note - If you decorate a function with the `@action` decorator, you will lost the derived state.  `@statefulFunction` will bind `this` for you.  As a result, `@statefulFunction` replaces `@action` while giving you all the features of this addon!
+`@statefulFunction` replaces `@action` while giving you all the features of this addon!
 
 
 ### Stateful Promise
