@@ -54,4 +54,27 @@ module('Integration | Component | playground', function (hooks) {
       .dom('[data-test-playground-hammer-perform-count]')
       .hasText('Perform Count: 3');
   });
+
+  test('not a promise', async function (assert) {
+    await render(hbs`<Playground />`);
+    assert
+      .dom('[data-test-playground-not-a-promise-perform-count]')
+      .hasText('Perform Count: 0');
+
+    click('[data-test-playground-not-a-promise-button]');
+    click('[data-test-playground-not-a-promise-button]');
+    await click('[data-test-playground-not-a-promise-button]');
+
+    assert
+      .dom('[data-test-playground-not-a-promise-perform-count]')
+      .hasText('Perform Count: 3');
+
+    await waitFor(
+      '[data-test-playground-not-a-promise-button]:not([disabled])'
+    );
+
+    assert
+      .dom('[data-test-playground-not-a-promise-perform-count]')
+      .hasText('Perform Count: 3');
+  });
 });

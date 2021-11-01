@@ -47,11 +47,16 @@ export function statefulFunction(options) {
 
       handler.performCount++;
 
-      const maybePromise = actualFunc.call(ctx, ...args);
+      let maybePromise = actualFunc.call(ctx, ...args);
       // wrapping the promise in a StatefulPromise
       const sp = new StatefulPromise().create(target, (resolveFn, rejectFn) => {
         // store away in case we need to cancel
         rej = rejectFn;
+
+        if (!maybePromise || !maybePromise.then) {
+          maybePromise = Promise.resolve(maybePromise);
+        }
+
         maybePromise
           .then((result) => {
             resolveFn(result);

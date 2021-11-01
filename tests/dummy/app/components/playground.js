@@ -3,6 +3,11 @@ import { statefulFunction, timeout } from 'ember-stateful-promise';
 
 export default class PlaygroundComponent extends Component {
   @statefulFunction
+  notAPromise() {
+    return 'done';
+  }
+
+  @statefulFunction
   async clickMe() {
     await timeout(this, 1000);
 
