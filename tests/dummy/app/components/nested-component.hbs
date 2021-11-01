@@ -1,0 +1,9 @@
+<h2>This button will be hammered</h2>
+<button
+  type="button"
+  data-test-playground-hammer-button
+  {{on "click" @hammerMe}}
+>
+    Hammer Me
+</button>
+<p data-test-playground-hammer-perform-count>Perform Count: {{@hammerMe.performCount}}</p>
