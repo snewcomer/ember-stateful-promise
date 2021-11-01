@@ -77,4 +77,37 @@ module('Integration | Component | playground', function (hooks) {
       .dom('[data-test-playground-not-a-promise-perform-count]')
       .hasText('Perform Count: 3');
   });
+
+  test('can cancel', async function (assert) {
+    await render(hbs`<Playground />`);
+    assert
+      .dom('[data-test-playground-cancel-perform-count]')
+      .hasText('Perform Count: 0');
+
+    click('[data-test-playground-cancel-button]');
+    click('[data-test-playground-cancel-button]');
+    await click('[data-test-playground-cancel-button]');
+
+    assert
+      .dom('[data-test-playground-cancel-perform-count]')
+      .hasText('Perform Count: 3');
+
+    await waitFor('[data-test-playground-cancel-button]:not([disabled])');
+
+    assert
+      .dom('[data-test-playground-cancel-perform-count]')
+      .hasText('Perform Count: 3');
+
+    click('[data-test-playground-button]');
+
+    await waitFor('[data-test-playground-button]:is([disabled])');
+
+    assert.dom('[data-test-playground-button]').hasAttribute('disabled');
+
+    await waitFor('[data-test-playground-button]:not([disabled])');
+
+    assert
+      .dom('[data-test-playground-button]')
+      .doesNotHaveAttribute('disabled');
+  });
 });

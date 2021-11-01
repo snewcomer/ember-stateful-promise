@@ -21,3 +21,14 @@
     Not a Promise (click me)
 </button>
 <p data-test-playground-not-a-promise-perform-count>Perform Count: {{this.notAPromise.performCount}}</p>
+
+<h2>Cancel Me</h2>
+<button
+  type="button"
+  data-test-playground-cancel-button
+  disabled={{if this.cancelMe.isRunning "true"}}
+  {{on "click" this.cancelMe}}
+>
+    Cancel Me
+</button>
+<p data-test-playground-cancel-perform-count>Perform Count: {{this.cancelMe.performCount}}</p>

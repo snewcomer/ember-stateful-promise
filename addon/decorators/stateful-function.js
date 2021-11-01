@@ -11,6 +11,12 @@ class Handler {
 
   @tracked performCount = 0;
 
+  cancelPromise = false;
+
+  cancel() {
+    this.cancelPromise = true;
+  }
+
   apply(target, _thisArg, argumentsList) {
     return target(...argumentsList);
   }
@@ -21,6 +27,12 @@ class Handler {
     }
 
     return Reflect.get(...arguments);
+  }
+  set(_obj, prop, value) {
+    if (this[prop] !== undefined && this[prop] !== null) {
+      this[prop] = value;
+    }
+    return Reflect.set(...arguments);
   }
 }
 
@@ -59,10 +71,18 @@ export function statefulFunction(options) {
 
         maybePromise
           .then((result) => {
-            resolveFn(result);
+            if (handler.cancelPromise) {
+              rej(
+                new CanceledPromise(
+                  'This promise was canceled.  If this was unintended, check to see if `fn.cancel()` was called.'
+                )
+              );
+            } else {
+              resolveFn(result);
+            }
           })
           .catch((e) => {
-            rejectFn(e);
+            rej(e);
           })
           .finally(() => {
             // Ideally we define a tracked property dynamically on the handler that just consumes the promise tracked state

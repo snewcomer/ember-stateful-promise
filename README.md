@@ -27,6 +27,7 @@ Supports
 - `isError`
 - `isCanceled`
 - `performCount`
+- `cancel()` // this.clickMe.cancel()
 
 ## Usage
 
