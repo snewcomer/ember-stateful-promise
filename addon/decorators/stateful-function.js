@@ -79,23 +79,20 @@ export function statefulFunction(options) {
       return sp;
     };
 
-    descriptor.value = new Proxy(_statefulFunc, handler);
-
-    return descriptor.value;
+    return new Proxy(_statefulFunc, handler);
   };
 
-  const hasNoArgs = isDecorating(...arguments);
-  const args = [...arguments];
-  return {
-    get() {
-      const fn = decorator.bind(this);
-      if (hasNoArgs) {
-        return fn.call(this, ...args);
-      } else {
+  if (isDecorating(...arguments)) {
+    const fn = decorator(...arguments);
+    return {
+      get() {
         return fn;
-      }
-    },
-  };
+      },
+    };
+  } else {
+    const fn = decorator.bind(this);
+    return fn;
+  }
 }
 
 /**
