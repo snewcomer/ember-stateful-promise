@@ -11,8 +11,8 @@ class Handler {
 
   @tracked performCount = 0;
 
-  apply(target, _thisArg, argumentsList) {
-    return target(...argumentsList);
+  apply(target, thisArg, argumentsList) {
+    return target.call(thisArg, ...argumentsList);
   }
 
   get(_target, prop) {
@@ -45,7 +45,7 @@ export function statefulFunction(options) {
 
       handler.performCount++;
 
-      const maybePromise = actualFunc.call(target, ...args);
+      const maybePromise = actualFunc.call(this, ...args);
       // wrapping the promise in a StatefulPromise
       const sp = new StatefulPromise().create(target, (resolveFn, rejectFn) => {
         // store away in case we need to cancel
