@@ -1,6 +1,5 @@
 import Component from '@glimmer/component';
-import { statefulFunction } from 'ember-stateful-promise/decorators/stateful-function';
-import { timeout } from 'ember-stateful-promise/utils/timeout';
+import { statefulFunction, timeout } from 'ember-stateful-promise';
 
 export default class PlaygroundComponent extends Component {
   @statefulFunction
