@@ -4,12 +4,6 @@ import { later } from '@ember/runloop';
 export function timeout(destroyable, t) {
   if (typeof destroyable !== 'number') {
     return new StatefulPromise().create(destroyable, (resolve) => {
-      setTimeout(() => {
-        resolve();
-      }, t);
-    });
-  } else {
-    return new StatefulPromise((resolve) => {
       later(
         destroyable,
         () => {
@@ -17,6 +11,12 @@ export function timeout(destroyable, t) {
         },
         t
       );
+    });
+  } else {
+    return new StatefulPromise((resolve) => {
+      later(() => {
+        resolve();
+      }, t);
     });
   }
 }

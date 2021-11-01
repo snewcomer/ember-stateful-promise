@@ -15,9 +15,9 @@ module('Integration | Component | playground', function (hooks) {
       .dom('[data-test-playground-perform-count]')
       .hasText('Perform Count: 0');
 
-    // await isn't right.  I would expect this to await until the StatefulPromise has finished
-    // perhaps need to register with test infra
-    await click('[data-test-playground-button]');
+    click('[data-test-playground-button]');
+
+    await waitFor('[data-test-playground-button]:is([disabled])');
 
     assert.dom('[data-test-playground-button]').hasAttribute('disabled');
     assert
