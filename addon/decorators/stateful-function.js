@@ -28,7 +28,6 @@ export function statefulFunction(options) {
   const throttle = options.throttle;
   const decorator = function (target, _property, descriptor) {
     const actualFunc = descriptor.value;
-    const fn = actualFunc.bind(target);
 
     const handler = new Handler();
     let rej;
@@ -46,7 +45,7 @@ export function statefulFunction(options) {
 
       handler.performCount++;
 
-      const maybePromise = fn.call(this, ...args);
+      const maybePromise = actualFunc.call(target, ...args);
       // wrapping the promise in a StatefulPromise
       const sp = new StatefulPromise().create(target, (resolveFn, rejectFn) => {
         // store away in case we need to cancel
