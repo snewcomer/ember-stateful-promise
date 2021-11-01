@@ -26,10 +26,10 @@ class Handler {
 
 export function statefulFunction(options) {
   const throttle = options.throttle;
+  const handler = new Handler();
+
   const decorator = function (target, _property, descriptor) {
     const actualFunc = descriptor.value;
-
-    const handler = new Handler();
     let rej;
     const _statefulFunc = function (...args) {
       if (rej) {
@@ -81,21 +81,28 @@ export function statefulFunction(options) {
 
     descriptor.value = new Proxy(_statefulFunc, handler);
 
-    return descriptor;
+    return descriptor.value;
   };
 
-  if (isDecorating(...arguments)) {
-    return decorator(...arguments);
-  } else {
-    return decorator;
-  }
+  const hasNoArgs = isDecorating(...arguments);
+  const args = [...arguments];
+  return {
+    get() {
+      const fn = decorator.bind(this);
+      if (hasNoArgs) {
+        return fn.call(this, ...args);
+      } else {
+        return fn;
+      }
+    },
+  };
 }
 
 /**
  * If a decorator takes custom arguments, it should return another decorator
  * function that does the actual decorating.  The way this is detected is by
  * checking if the arguments match the expected decorator arguments which, for
- * a method, is a target funcgion/class, a name, and a descriptor.
+ * a method, is a target function/class, a name, and a descriptor.
  *
  * @returns {Boolean}
  */
