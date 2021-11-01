@@ -26,12 +26,13 @@ class Handler {
 
 export function statefulFunction(options) {
   const throttle = options.throttle;
-  const handler = new Handler();
   let ctx;
   const decorator = function (target, _property, descriptor) {
     const actualFunc = descriptor.value;
 
+    const handler = new Handler();
     let rej;
+
     const _statefulFunc = function (...args) {
       if (rej) {
         if (throttle) {
