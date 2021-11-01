@@ -63,7 +63,7 @@ module('Unit | decorators | stateful-function', function () {
     class Person {
       @statefulFunction({ throttle: true })
       async clickMe() {
-        await timeout(this, 200);
+        await timeout(200);
       }
     }
 
