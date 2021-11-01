@@ -26,10 +26,11 @@ class Handler {
 
 export function statefulFunction(options) {
   const throttle = options.throttle;
+  const handler = new Handler();
+  let ctx;
   const decorator = function (target, _property, descriptor) {
     const actualFunc = descriptor.value;
 
-    const handler = new Handler();
     let rej;
     const _statefulFunc = function (...args) {
       if (rej) {
@@ -45,7 +46,7 @@ export function statefulFunction(options) {
 
       handler.performCount++;
 
-      const maybePromise = actualFunc.call(target, ...args);
+      const maybePromise = actualFunc.call(ctx, ...args);
       // wrapping the promise in a StatefulPromise
       const sp = new StatefulPromise().create(target, (resolveFn, rejectFn) => {
         // store away in case we need to cancel
@@ -79,9 +80,14 @@ export function statefulFunction(options) {
       return sp;
     };
 
-    descriptor.value = new Proxy(_statefulFunc, handler);
+    const proxy = new Proxy(_statefulFunc, handler);
 
-    return descriptor;
+    return {
+      get() {
+        ctx = this;
+        return proxy;
+      },
+    };
   };
 
   if (isDecorating(...arguments)) {
