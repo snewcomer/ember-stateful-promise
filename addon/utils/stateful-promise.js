@@ -30,12 +30,16 @@ export class StatefulPromise extends Promise {
           (data) => {
             resolve(data);
             state = 'RESOLVED';
-            ctx._state = state;
+            if (ctx) {
+              ctx._state = state;
+            }
           },
           (err) => {
             reject(err);
             state = 'ERROR';
-            ctx._state = state;
+            if (ctx) {
+              ctx._state = state;
+            }
           }
         );
       } else {
@@ -52,6 +56,7 @@ export class StatefulPromise extends Promise {
       this._reject = rejectFn;
     }
 
+    // keep this b/c ctx may be undefined if no async when invoking body of StatefulPromise callback
     if (state) {
       this._state = state;
     }
