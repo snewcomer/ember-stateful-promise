@@ -19,6 +19,7 @@ export class StatefulPromise extends Promise {
     let rejectFn;
 
     let state;
+    let ctx;
     super((resolve, reject) => {
       // fn when .then or .catch is executed
       // or if an executor is provided directly from the function invocation
@@ -29,10 +30,12 @@ export class StatefulPromise extends Promise {
           (data) => {
             resolve(data);
             state = 'RESOLVED';
+            ctx._state = state;
           },
           (err) => {
             reject(err);
             state = 'ERROR';
+            ctx._state = state;
           }
         );
       } else {
@@ -41,6 +44,8 @@ export class StatefulPromise extends Promise {
         rejectFn = reject;
       }
     });
+
+    ctx = this;
 
     if (!fn) {
       this._resolve = resolveFn;
