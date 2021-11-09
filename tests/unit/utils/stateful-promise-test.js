@@ -1,6 +1,7 @@
 import { StatefulPromise } from 'ember-stateful-promise/utils/stateful-promise';
 import { module, test } from 'qunit';
 import { destroy } from '@ember/destroyable';
+import { later } from '@ember/runloop';
 
 module('Unit | Utility | stateful-promise', function () {
   test('it works with promise executor', async function (assert) {
@@ -143,10 +144,15 @@ module('Unit | Utility | stateful-promise', function () {
   });
 
   test('it works with Promise API success', async function (assert) {
-    assert.expect(5);
+    assert.expect(9);
     let instance = new StatefulPromise((resolveFn) => {
       resolveFn(2);
     });
+    assert.false(instance.isRunning);
+    assert.true(instance.isResolved);
+    assert.false(instance.isError);
+    assert.false(instance.isCanceled);
+
     const done = assert.async();
     instance.then((data) => {
       assert.equal(data, 2);
@@ -157,6 +163,24 @@ module('Unit | Utility | stateful-promise', function () {
 
       done();
     });
+  });
+
+  test('it works with Promise API success async/await', async function (assert) {
+    assert.expect(9);
+    let instance = new StatefulPromise((resolveFn) => {
+      later(resolveFn, 2, 200);
+    });
+    assert.true(instance.isRunning);
+    assert.false(instance.isResolved);
+    assert.false(instance.isError);
+    assert.false(instance.isCanceled);
+
+    const data = await instance;
+    assert.equal(data, 2);
+    assert.false(instance.isRunning);
+    assert.true(instance.isResolved);
+    assert.false(instance.isError);
+    assert.false(instance.isCanceled);
   });
 
   test('it works with Promise API error', async function (assert) {
