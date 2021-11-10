@@ -1,5 +1,6 @@
 import { StatefulPromise } from 'ember-stateful-promise/utils/stateful-promise';
 import { CanceledPromise } from 'ember-stateful-promise/utils/canceled-promise';
+import { DestroyableCanceledPromise } from 'ember-stateful-promise/utils/destroyable-canceled-promise';
 import { tracked } from '@glimmer/tracking';
 
 class Handler {
@@ -12,6 +13,15 @@ class Handler {
   @tracked performCount = 0;
 
   cancelPromise = false;
+
+  reset() {
+    this.isCanceled = false;
+    this.isResolved = false;
+    this.isRunning = false;
+    this.isError = false;
+
+    this.performCount = 0;
+  }
 
   cancel() {
     this.cancelPromise = true;
@@ -39,10 +49,10 @@ class Handler {
 export function statefulFunction(options) {
   const throttle = options.throttle;
   let ctx;
-  const decorator = function (target, _property, descriptor) {
+  const decorator = function (_target, _property, descriptor) {
     const actualFunc = descriptor.value;
 
-    const handler = new Handler();
+    let handler = new Handler();
     let rej;
 
     const _statefulFunc = function (...args) {
@@ -61,7 +71,7 @@ export function statefulFunction(options) {
 
       let maybePromise = actualFunc.call(ctx, ...args);
       // wrapping the promise in a StatefulPromise
-      const sp = new StatefulPromise().create(target, (resolveFn, rejectFn) => {
+      const sp = new StatefulPromise().create(ctx, (resolveFn, rejectFn) => {
         // store away in case we need to cancel
         rej = rejectFn;
 
@@ -82,6 +92,9 @@ export function statefulFunction(options) {
             }
           })
           .catch((e) => {
+            if (e instanceof DestroyableCanceledPromise) {
+              handler.reset();
+            }
             rej(e);
           })
           .finally(() => {
@@ -98,7 +111,12 @@ export function statefulFunction(options) {
 
       sp.catch((e) => {
         // ensure no unhandledrejection if canceled
-        if (!(e instanceof CanceledPromise)) {
+        if (
+          !(
+            e instanceof CanceledPromise ||
+            e instanceof DestroyableCanceledPromise
+          )
+        ) {
           throw e;
         }
       });

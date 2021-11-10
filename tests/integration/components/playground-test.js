@@ -6,6 +6,24 @@ import { hbs } from 'ember-cli-htmlbars';
 module('Integration | Component | playground', function (hooks) {
   setupRenderingTest(hooks);
 
+  test('it renders - setup state', async function (assert) {
+    await render(hbs`<Playground />`);
+    assert
+      .dom('[data-test-playground-perform-count]')
+      .hasText('Perform Count: 0');
+
+    click('[data-test-playground-button]');
+    click('[data-test-playground-button]');
+
+    await waitFor('[data-test-playground-button]:is([disabled])');
+    assert.dom('[data-test-playground-button]').hasAttribute('disabled');
+
+    assert
+      .dom('[data-test-playground-perform-count]')
+      .hasText('Perform Count: 2');
+    // button is disabled and promise needs to be cancelled when component is destroyed
+  });
+
   test('it renders', async function (assert) {
     await render(hbs`<Playground />`);
     assert

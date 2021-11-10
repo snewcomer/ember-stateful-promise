@@ -1,6 +1,7 @@
 import { tracked } from '@glimmer/tracking';
 import { registerDestructor, isDestroying } from '@ember/destroyable';
 import { CanceledPromise } from 'ember-stateful-promise/utils/canceled-promise';
+import { DestroyableCanceledPromise } from 'ember-stateful-promise/utils/destroyable-canceled-promise';
 
 export class StatefulPromise extends Promise {
   /**
@@ -71,7 +72,7 @@ export class StatefulPromise extends Promise {
       if (this._state === 'RUNNING') {
         this._state = 'CANCELED';
         this._reject(
-          new CanceledPromise(
+          new DestroyableCanceledPromise(
             'The object this promise was attached to was destroyed'
           )
         );
@@ -93,7 +94,7 @@ export class StatefulPromise extends Promise {
             this._state = 'CANCELED';
             this._reject(
               new CanceledPromise(
-                'The object this promise was attached to was destroyed'
+                'The object this promise was attached to was destroyed while the promise was still outstanding'
               )
             );
           } else {
@@ -103,6 +104,8 @@ export class StatefulPromise extends Promise {
         })
         .catch((e) => {
           if (e instanceof CanceledPromise) {
+            this._state = 'CANCELED';
+          } else if (e instanceof DestroyableCanceledPromise) {
             this._state = 'CANCELED';
           } else {
             this._state = 'ERROR';
@@ -116,7 +119,7 @@ export class StatefulPromise extends Promise {
           if (isDestroying(destroyable)) {
             this._state = 'CANCELED';
             this._reject(
-              new CanceledPromise(
+              new DestroyableCanceledPromise(
                 'The object this promise was attached to was destroyed'
               )
             );
@@ -128,6 +131,8 @@ export class StatefulPromise extends Promise {
         // reject fn
         (err) => {
           if (err instanceof CanceledPromise) {
+            this._state = 'CANCELED';
+          } else if (err instanceof DestroyableCanceledPromise) {
             this._state = 'CANCELED';
           } else {
             this._state = 'ERROR';
