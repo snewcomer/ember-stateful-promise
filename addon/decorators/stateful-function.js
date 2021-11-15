@@ -87,11 +87,11 @@ export function statefulFunction(options) {
             if (handler._cancelPromise) {
               // cancel wrapping promise
               rejectFn(
-                handler._cancelPromise instanceof Error ?
-                handler._cancelPromise :
-                new CanceledPromise(
-                  'This promise was canceled.  If this was unintended, check to see if `fn.cancel()` was called.'
-                )
+                handler._cancelPromise instanceof Error
+                  ? handler._cancelPromise
+                  : new CanceledPromise(
+                      'This promise was canceled.  If this was unintended, check to see if `fn.cancel()` was called.'
+                    )
               );
 
               handler.reset();
@@ -123,10 +123,8 @@ export function statefulFunction(options) {
       sp.catch((e) => {
         // ensure no unhandledrejection if canceled
         if (
-          (
-            e instanceof CanceledPromise ||
-            e instanceof DestroyableCanceledPromise
-          )
+          e instanceof CanceledPromise ||
+          e instanceof DestroyableCanceledPromise
         ) {
           handler._cancelPromise = e;
         } else {
