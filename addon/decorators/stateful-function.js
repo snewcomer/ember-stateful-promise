@@ -12,7 +12,7 @@ class Handler {
 
   @tracked performCount = 0;
 
-  cancelPromise = false;
+  _cancelPromise = false;
 
   reset() {
     this.isCanceled = false;
@@ -20,11 +20,13 @@ class Handler {
     this.isRunning = false;
     this.isError = false;
 
-    this.performCount = 0;
+    // performCount is reset only if destroyed
+
+    this._cancelPromise = false;
   }
 
   cancel() {
-    this.cancelPromise = true;
+    this._cancelPromise = true;
   }
 
   apply(target, _thisArg, argumentsList) {
@@ -53,13 +55,14 @@ export function statefulFunction(options) {
     const actualFunc = descriptor.value;
 
     let handler = new Handler();
-    let rej;
+    let rej = null;
 
     const _statefulFunc = function (...args) {
       if (rej) {
         if (throttle) {
           return;
         }
+        // we may have invoked while an old project was outstanding
         rej(
           new CanceledPromise(
             'This promise was canceled. Another promise was created while the other was outstanding.'
@@ -81,12 +84,17 @@ export function statefulFunction(options) {
 
         maybePromise
           .then((result) => {
-            if (handler.cancelPromise) {
-              rej(
+            if (handler._cancelPromise) {
+              // cancel wrapping promise
+              rejectFn(
+                handler._cancelPromise instanceof Error ?
+                handler._cancelPromise :
                 new CanceledPromise(
                   'This promise was canceled.  If this was unintended, check to see if `fn.cancel()` was called.'
                 )
               );
+
+              handler.reset();
             } else {
               resolveFn(result);
             }
@@ -94,8 +102,11 @@ export function statefulFunction(options) {
           .catch((e) => {
             if (e instanceof DestroyableCanceledPromise) {
               handler.reset();
+              handler.performCount = 0;
             }
-            rej(e);
+
+            // cancel wrapping promise
+            rejectFn(e);
           })
           .finally(() => {
             // Ideally we define a tracked property dynamically on the handler that just consumes the promise tracked state
@@ -112,11 +123,13 @@ export function statefulFunction(options) {
       sp.catch((e) => {
         // ensure no unhandledrejection if canceled
         if (
-          !(
+          (
             e instanceof CanceledPromise ||
             e instanceof DestroyableCanceledPromise
           )
         ) {
+          handler._cancelPromise = e;
+        } else {
           throw e;
         }
       });
