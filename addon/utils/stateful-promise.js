@@ -71,6 +71,11 @@ export class StatefulPromise extends Promise {
     registerDestructor(destroyable, () => {
       if (this._state === 'RUNNING') {
         this._state = 'CANCELED';
+        this._reject(
+          new DestroyableCanceledPromise(
+            'The object this promise was attached to was destroyed'
+          )
+        );
       }
     });
 
