@@ -88,7 +88,7 @@ export function statefulFunction(options) {
               // cancel wrapping promise
               rejectFn(
                 new CanceledPromise(
-                    'This promise was canceled.  Either the object this promise was attached to was destroyed or you called fn.cancel().'
+                  'This promise was canceled.  Either the object this promise was attached to was destroyed or you called fn.cancel().'
                 )
               );
 
