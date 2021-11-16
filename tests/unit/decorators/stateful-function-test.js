@@ -114,7 +114,7 @@ module('Unit | decorators | stateful-function', function () {
     } catch (e) {
       assert.equal(
         e.message,
-        'This promise was canceled.  If this was unintended, check to see if `fn.cancel()` was called.'
+        'This promise was canceled.  Either the object this promise was attached to was destroyed or you called fn.cancel().'
       );
       assert.false(promise.isRunning);
       assert.true(promise.isCanceled);

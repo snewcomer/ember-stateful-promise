@@ -62,7 +62,7 @@ export function statefulFunction(options) {
         if (throttle) {
           return;
         }
-        // we may have invoked while an old project was outstanding
+        // we may have invoked while an old promise was outstanding
         rej(
           new CanceledPromise(
             'This promise was canceled. Another promise was created while the other was outstanding.'
@@ -84,14 +84,12 @@ export function statefulFunction(options) {
 
         maybePromise
           .then((result) => {
-            if (handler._cancelPromise) {
+            if (sp.isCanceled || handler._cancelPromise) {
               // cancel wrapping promise
               rejectFn(
-                handler._cancelPromise instanceof Error
-                  ? handler._cancelPromise
-                  : new CanceledPromise(
-                      'This promise was canceled.  If this was unintended, check to see if `fn.cancel()` was called.'
-                    )
+                new CanceledPromise(
+                    'This promise was canceled.  Either the object this promise was attached to was destroyed or you called fn.cancel().'
+                )
               );
 
               handler.reset();
@@ -123,11 +121,11 @@ export function statefulFunction(options) {
       sp.catch((e) => {
         // ensure no unhandledrejection if canceled
         if (
-          e instanceof CanceledPromise ||
-          e instanceof DestroyableCanceledPromise
+          !(
+            e instanceof CanceledPromise ||
+            e instanceof DestroyableCanceledPromise
+          )
         ) {
-          handler._cancelPromise = e;
-        } else {
           throw e;
         }
       });
