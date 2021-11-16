@@ -10,8 +10,6 @@ export class StatefulPromise extends Promise {
   */
   @tracked _state = 'RUNNING';
 
-  destroyable = null;
-
   _resolve = null;
   _reject = null;
 
