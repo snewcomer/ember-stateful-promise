@@ -4,6 +4,8 @@ import { DestroyableCanceledPromise } from 'ember-stateful-promise/utils/destroy
 import { tracked } from '@glimmer/tracking';
 import { registerDestructor } from '@ember/destroyable';
 
+const CANCEL_PROMISE = Symbol('cancele-promise');
+
 class Handler {
   // these track the properties in stateful-promise
   @tracked isCanceled = false;
@@ -13,7 +15,9 @@ class Handler {
 
   @tracked performCount = 0;
 
-  _cancelPromise = false;
+  constructor() {
+    this[CANCEL_PROMISE] = false;
+  }
 
   reset() {
     this.isCanceled = false;
@@ -23,11 +27,11 @@ class Handler {
 
     // performCount is reset only if destroyed
 
-    this._cancelPromise = false;
+    this[CANCEL_PROMISE] = false;
   }
 
   cancel() {
-    this._cancelPromise = true;
+    this[CANCEL_PROMISE] = true;
   }
 
   apply(target, _thisArg, argumentsList) {
@@ -90,11 +94,11 @@ export function statefulFunction(options) {
 
         maybePromise
           .then((result) => {
-            if (handler._cancelPromise) {
+            if (sp.isCanceled || handler[CANCEL_PROMISE]) {
               // cancel wrapping promise
               rejectFn(
-                handler._cancelPromise instanceof Error
-                  ? handler._cancelPromise
+                handler[CANCEL_PROMISE] instanceof Error
+                  ? handler[CANCEL_PROMISE]
                   : new CanceledPromise(
                       'This promise was canceled.  If this was unintended, check to see if `fn.cancel()` was called.'
                     )
@@ -117,6 +121,8 @@ export function statefulFunction(options) {
           .finally(() => {
             // Ideally we define a tracked property dynamically on the handler that just consumes the promise tracked state
             // https://github.com/emberjs/ember.js/issues/18362
+
+            // handler was already updated
             if (!sp.isCanceled) {
               handler.isRunning = sp.isRunning;
               handler.isResolved = sp.isResolved;
@@ -134,11 +140,11 @@ export function statefulFunction(options) {
           e instanceof CanceledPromise ||
           e instanceof DestroyableCanceledPromise
         ) {
-          handler._cancelPromise = e;
+          handler[CANCEL_PROMISE] = e;
         } else {
           throw e;
         }
-      }).then(() => maybePromise);
+      }).then(() => maybePromise); // pause until inner promise has resolved
 
       return sp;
     };
