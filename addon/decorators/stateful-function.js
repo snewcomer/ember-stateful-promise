@@ -2,6 +2,7 @@ import { StatefulPromise } from 'ember-stateful-promise/utils/stateful-promise';
 import { CanceledPromise } from 'ember-stateful-promise/utils/canceled-promise';
 import { DestroyableCanceledPromise } from 'ember-stateful-promise/utils/destroyable-canceled-promise';
 import { tracked } from '@glimmer/tracking';
+import { registerDestructor } from '@ember/destroyable';
 
 class Handler {
   // these track the properties in stateful-promise
@@ -70,6 +71,11 @@ export function statefulFunction(options) {
         );
       }
 
+      registerDestructor(ctx, () => {
+        handler.reset();
+        handler.performCount = 0;
+      });
+
       handler.performCount++;
 
       let maybePromise = actualFunc.call(ctx, ...args);
@@ -111,10 +117,12 @@ export function statefulFunction(options) {
           .finally(() => {
             // Ideally we define a tracked property dynamically on the handler that just consumes the promise tracked state
             // https://github.com/emberjs/ember.js/issues/18362
-            handler.isRunning = sp.isRunning;
-            handler.isResolved = sp.isResolved;
-            handler.isError = sp.isError;
-            handler.isCanceled = sp.isCanceled;
+            if (!sp.isCanceled) {
+              handler.isRunning = sp.isRunning;
+              handler.isResolved = sp.isResolved;
+              handler.isError = sp.isError;
+              handler.isCanceled = sp.isCanceled;
+            }
           });
       });
 
@@ -130,7 +138,7 @@ export function statefulFunction(options) {
         } else {
           throw e;
         }
-      });
+      }).then(() => maybePromise);
 
       return sp;
     };
