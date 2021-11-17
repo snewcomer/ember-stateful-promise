@@ -2,7 +2,7 @@ import { StatefulPromise } from 'ember-stateful-promise/utils/stateful-promise';
 import { CanceledPromise } from 'ember-stateful-promise/utils/canceled-promise';
 import { DestroyableCanceledPromise } from 'ember-stateful-promise/utils/destroyable-canceled-promise';
 import { tracked } from '@glimmer/tracking';
-import { registerDestructor } from '@ember/destroyable';
+import { registerDestructor, isDestroying } from '@ember/destroyable';
 
 const CANCEL_PROMISE = Symbol('cancele-promise');
 
@@ -73,6 +73,10 @@ export function statefulFunction(options) {
             'This promise was canceled. Another promise was created while the other was outstanding.'
           )
         );
+      }
+
+      if (isDestroying(ctx)) {
+        return;
       }
 
       registerDestructor(ctx, () => {
