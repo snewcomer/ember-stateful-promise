@@ -94,7 +94,7 @@ module('Unit | decorators | stateful-function', function () {
   });
 
   test('can cancel', async function (assert) {
-    assert.expect(8);
+    assert.expect(10);
 
     class Person {
       @statefulFunction
@@ -120,6 +120,8 @@ module('Unit | decorators | stateful-function', function () {
       assert.true(promise.isCanceled);
       assert.false(promise.isError);
       assert.equal(person.clickMe.performCount, 1);
+      assert.false(person.clickMe.isRunning);
+      assert.false(person.clickMe.isCanceled);
     }
   });
 });

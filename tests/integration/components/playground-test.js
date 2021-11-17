@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import { module, test } from 'qunit';
 import { setupRenderingTest } from 'ember-qunit';
 import { click, render, waitFor } from '@ember/test-helpers';
@@ -5,6 +6,16 @@ import { hbs } from 'ember-cli-htmlbars';
 
 module('Integration | Component | playground', function (hooks) {
   setupRenderingTest(hooks);
+
+  let tmp;
+  hooks.before(() => {
+    tmp = QUnit.onUncaughtException;
+    QUnit.onUncaughtException = () => {};
+  });
+
+  hooks.after(() => {
+    QUnit.onUncaughtException = tmp;
+  });
 
   test('it renders - setup state', async function (assert) {
     await render(hbs`<Playground />`);

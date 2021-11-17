@@ -10,8 +10,6 @@ export class StatefulPromise extends Promise {
   */
   @tracked _state = 'RUNNING';
 
-  destroyable = null;
-
   _resolve = null;
   _reject = null;
 
@@ -93,7 +91,7 @@ export class StatefulPromise extends Promise {
           if (isDestroying(destroyable)) {
             this._state = 'CANCELED';
             this._reject(
-              new CanceledPromise(
+              new DestroyableCanceledPromise(
                 'The object this promise was attached to was destroyed while the promise was still outstanding'
               )
             );
