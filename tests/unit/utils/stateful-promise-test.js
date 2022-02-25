@@ -45,6 +45,12 @@ module('Unit | Utility | stateful-promise', function () {
     await resolvedPromise;
 
     let result = new StatefulPromise().create(obj, resolvedPromise);
+    assert.true(result.isRunning);
+    assert.false(result.isResolved);
+    assert.false(result.isError);
+
+    await result;
+
     assert.false(result.isRunning);
     assert.true(result.isResolved);
     assert.false(result.isError);
