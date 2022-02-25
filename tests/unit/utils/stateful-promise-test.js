@@ -56,6 +56,26 @@ module('Unit | Utility | stateful-promise', function () {
     assert.false(result.isError);
   });
 
+  test('it provides correct state for unrelated resolved promise', async function (assert) {
+    const resolvedPromise = Promise.resolve(2);
+    const obj = {};
+
+    // promise is resolved _before_ constructing a StatefulPromise
+    // instance for it
+    await resolvedPromise;
+
+    let result = new StatefulPromise().create(obj, resolvedPromise);
+    assert.true(result.isRunning);
+    assert.false(result.isResolved);
+    assert.false(result.isError);
+
+    await Promise.resolve();
+
+    assert.false(result.isRunning);
+    assert.true(result.isResolved);
+    assert.false(result.isError);
+  });
+
   test('it works with primitive', async function (assert) {
     const obj = {};
     let result = new StatefulPromise().create(obj, 2);
