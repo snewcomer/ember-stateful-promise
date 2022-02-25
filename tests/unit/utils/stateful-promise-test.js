@@ -48,7 +48,7 @@ module('Unit | Utility | stateful-promise', function () {
     assert.false(result.isRunning);
     assert.true(result.isResolved);
     assert.false(result.isError);
-  })
+  });
 
   test('it works with primitive', async function (assert) {
     const obj = {};
